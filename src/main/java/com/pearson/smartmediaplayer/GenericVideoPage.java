@@ -1,0 +1,711 @@
+package com.pearson.smartmediaplayer;
+
+/**
+ * This is the page for the link http://player.media.prod.pearsoncmg.com/assets/tH6IgtX_wW1isZkRq5sYgKcVTIqMJOXl
+ * This video has two captions and no chapters
+ */
+
+import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+
+import com.pearson.test.eselenium.framework.BasicPageObject;
+import com.pearson.test.eselenium.framework.core.UIDriver;
+import com.pearson.test.eselenium.framework.core.UIElement;
+import com.pearson.test.eselenium.framework.core.UIElements;
+import com.pearson.test.eselenium.framework.drivers.ErrorDetector;
+import com.pearson.test.eselenium.framework.util.UIType;
+
+public class GenericVideoPage extends BasicPageObject implements ErrorDetector  {
+
+    private static final Logger logger = Logger.getLogger(GenericVideoPage.class);
+
+    public GenericVideoPage(UIDriver driver) {
+        super(driver);
+    }
+
+    
+    
+    
+    // Trying to list the elements left to right, top to bottom
+    // Some of these elements can only be seen after clicking a button
+    // Some are in the frame, some are not
+    public UIElement pearsonLogo = createElement(
+            UIType.Css,
+
+            "a>img[src='http://media.pearsoncmg.com/cmg/mediaplayer_themes/pearson_branding/pearson-banner-left-blue.gif']");
+    // This is how we can find chapter menu buttons in prod and environments other than dev and cert as of Aug-14-2013
+    // public UIElement chapterMenuactive = createElement(UIType.Css, ".btn.chapters.img-menu.active");
+    public UIElement chapterMenuactive = createElement(UIType.Css, "button.chapters");
+    // This is how we can find chapter menu buttons in prod and environments other than dev and cert as of Aug-14-2013
+    // public UIElement chapterMenu = createElement(UIType.Css, ".btn.chapters.img-menu");
+    //public UIElement chapterMenu = createElement(UIType.Css, "button.chapters");
+    public UIElement chapterMenu = createElement(UIType.Xpath, "html/body/div[1]/div/div[2]/div[1]/span[2]/button");
+    public UIElement chapterMenuList = createElement(UIType.ID, "player-padding");
+    public UIElement chapterMarker5 = createElement(UIType.Xpath,"//*[@id='progressBar']/div[6]/a");
+    public UIElement chapterMarker10 = createElement(UIType.Xpath,"//*[@id='progressBar']/div[11]/a");
+    // TODO is it a good idea to use a list of elements?
+    public UIElements chapterTitles = createElements(
+            UIType.Xpath,
+            ".//*[@id='player-padding']/div[3]/div/div/div[2]/ul/li");
+    public UIElement chapter1 = createElement(
+            UIType.Xpath,
+            "//*[@id='player-padding']/div[3]/div/div/div[2]/ul/li[1]");
+    public UIElement chapter2 = createElement(
+            UIType.Xpath,
+            "//*[@id='player-padding']/div[3]/div/div/div[2]/ul/li[2]");
+    public UIElement chapter3 = createElement(
+            UIType.Xpath,
+            "//*[@id='player-padding']/div[3]/div/div/div[2]/ul/li[3]");
+    public UIElement chapter4 = createElement(
+            UIType.Xpath,
+            "//*[@id='player-padding']/div[3]/div/div/div[2]/ul/li[4]");
+    public UIElement chapter5 = createElement(
+            UIType.Xpath,
+            "//*[@id='player-padding']/div[3]/div/div/div[2]/ul/li[5]");
+    public UIElement chapter6 = createElement(
+            UIType.Xpath,
+            "//*[@id='player-padding']/div[3]/div/div/div[2]/ul/li[6]");
+    public UIElement chapter7 = createElement(
+            UIType.Xpath,
+            "//*[@id='player-padding']/div[3]/div/div/div[2]/ul/li[7]");
+    public UIElement chapter8 = createElement(
+            UIType.Xpath,
+            "//*[@id='player-padding']/div[3]/div/div/div[2]/ul/li[8]");
+    public UIElement chapter9 = createElement(
+            UIType.Xpath,
+            "//*[@id='player-padding']/div[3]/div/div/div[2]/ul/li[9]");
+    public UIElement chapter10 = createElement(
+            UIType.Xpath,
+            "//*[@id='player-padding']/div[3]/div/div/div[2]/ul/li[10]");
+    // public UIElement moreInfoButton = createElement(UIType.ClassName, "minfo");
+    public UIElement videoTitle = createElement(UIType.Css, ".video-title");
+    // public UIElement moreInfoTextArea = createElement(UIType.ClassName, "tpPlayer_minfo_desc");
+    public UIElement chapterFiveLinkText = createElement(UIType.Text, "Objective 5");
+    // The error message (area) that shows up when videos fail to load. There is only one h1 in the
+    // frame
+    public UIElement errorRequestMessage = createElement(UIType.Css, "h1");
+    // I think this is the area of the video image.
+    // Used for play,pause,replay
+    public UIElement videoImageArea = createElement(UIType.ID, "_playerPdkSwfObject");
+    // The video image itself is a png or jpg file
+    public UIElement stillImageChapteringVid = createElement(
+            UIType.Css,
+            "meta[content='http://pform-tn-pmd185999.download.theplatform.com.edgesuite.net/Pearson_Education/921/183/mgia6e_sl_01_01_256_640x480_5434947807.jpg']");
+    // This is also the hover replay and hover pause button
+    public UIElement hoverPlayButton = createElement(UIType.Css, "#overlayPlayButton");
+   // public UIElement hoverPlayButton = createElement(UIType.Css, ".overlayPlayButton.overlayButton");
+    // Div that verifies the video is playing
+    public UIElement playingState = createElement(UIType.ClassName, "playing");
+    // Div that verifies the video is paused
+    public UIElement pausedState = createElement(UIType.ClassName, "paused");
+
+    public UIElement captionArea = createElement(UIType.Css, "div[id=captions]>div>p");
+    // These are elements for the progress bar
+    public UIElement progressBarSlider = createElement(UIType.ClassName, "progressBarHandle");
+    // progress bar
+    public UIElement progressBar = createElement(UIType.ID, "progressBar");
+    // The red bar in progress bar, which has a constantly changing width value
+    public UIElement progressRedBar = createElement(UIType.ID, "progress");
+    // Time tool tip on progress bar on hover over
+    public UIElement timeTooltip = createElement(UIType.ClassName, "tooltip-content");
+    // Concept check indicator
+    public UIElement conceptCheckIndicator = createElement(UIType.ClassName, "conchk-num-1");
+    // Submit button for concept check
+    public UIElement conceptCheckSubmit = createElement(UIType.ID, "ansBtn");
+    // Concept check radio button
+    public UIElement conceptCheckRadioButton1 = createElement(
+            UIType.Css,
+            "input[type=radio][value='1']");
+    public UIElement conceptCheckRadioButton2 = createElement(
+            UIType.Css,
+            "input[type=radio][value='2']");
+    public UIElement conceptCheckRadioButton3 = createElement(
+            UIType.Css,
+            "input[type=radio][value='3']");
+    public UIElement ReopenConceptCheck = createElement(
+            UIType.Css,
+            ".conChkQIcon");
+    public UIElement CloseButton = createElement(
+            UIType.Css,
+            "#ansCloseBtn");
+
+    public UIElement chapteringIcon3 = createElement(UIType.ClassName, "chapter-num-3");
+    public UIElement chapteringIcon2 = createElement(UIType.Css, ".chapter-dot.chapter-num-3");
+    public UIElement chapteringIcon3Tooltip = createElement(
+            UIType.Css,
+            "div[class~='chapter-tooltip3']");
+    public UIElement chapteringIcon9 = createElement(UIType.ClassName, "chapter-num-9");
+    // This is also a pause button on the toolbar. Also used for replay
+    // public UIElement playPauseButton = createElement(UIType.ID, "playBtn");
+
+    public UIElement playPauseButton = createElement(UIType.Css, "#playBtn");
+
+    // separate play and pause button
+
+    public UIElement pauseButton = createElement(
+            UIType.Css,
+            "button[id='playBtn'][value='Pause Video']");
+    public UIElement pauseAudio = createElement(
+            UIType.Css,
+            "button[id='playBtn'][value='Pause Audio']");
+    public UIElement playButton = createElement(
+            UIType.Css,
+            "button[id='playBtn'][value='Play Video']");
+    public UIElement playAudio = createElement(
+            UIType.Css,
+            "button[id='playBtn'][value='Play Audio']");
+
+    // Saved what the pause Button was originally initialized as. Maven Verify will complain about
+    // compound classes
+    // Also the use of the pauseButton element is not correct since it never really shows up as
+    // hilighted unless you are
+    // Inspecting it or have tabbed to it.
+    // public UIElement pauseButton = createElement(UIType.ClassName, "boxable highlight pause");
+    // createElement(UIType.ClassName,"ss-icon boxable highlight on");
+    public UIElement leftPlayCounter = createElement(UIType.Css, "#counter");
+    public UIElement slashBetweenCounter = createElement(UIType.ID, "fraction");
+    public UIElement rightPlayCounter = createElement(UIType.ID, "duration");
+    public UIElement muteButton = createElement(UIType.ID, "muteBtn");
+    // note that compound classnames are not supported
+    public UIElement volumeSlider = createElement(UIType.ClassName, "redBarHandle");
+    public UIElement volumeBg = createElement(UIType.ID, "volumeBg");
+    public UIElement loadedVolumeSlider = createElement(UIType.ID, "redBar");
+    
+    public UIElement captionButton = createElement(UIType.ID, "captionBtn");
+    // Note that not all videos will have all of the caption Buttons
+    // We can add the others and make it so if an element is not found the test
+    // does not autofail.
+    public UIElement captionsEnglishLink = createElement(
+            UIType.Xpath,
+            "//*[@id='ccMenu']/ul/li[1]/a");
+    
+    public UIElement captionsSpanishLink = createElement(
+            UIType.Xpath,
+            "//*[@id='ccMenu']/ul/li[2]/a");
+    public UIElement captionsOffLink = createElement(
+            UIType.Xpath,
+            "//*[@id='ccMenu']/ul/li[3]/a");
+    public UIElement smallSizeButton = createElement(UIType.ID, "fs_sml");
+    // public UIElement normalSizeButton = createElement(UIType.ID, "fs_med");
+    public UIElement fullSizeButton = createElement(UIType.ID, "fs");
+    public UIElement playBackTroubleLink = createElement(UIType.LinkText, "Playback trouble?");
+    // The location of the caption element is not in a descriptive location
+    public UIElement copyRightText = createElement(
+            UIType.Css,
+            "body div[align='center'] table tbody tr:nth-child(3) td[align='center']");
+    public UIElement chapterMenuItems = createElement(
+            UIType.Css,
+            ".tpPlayer_chaptering_menu_overlay");
+    public UIElement moreInfoButton = createElement(UIType.Css, ".btn.minfo");
+    public UIElement moreInfoTextArea = createElement(UIType.Css, ".mCSB_container");
+    public UIElement iFrame = createElement(UIType.Css, "iframe");
+    public UIElement body = createElement(UIType.Css, "body");
+    public UIElement FirstDot = createElement(UIType.Css, ".chapter-dot.chapter-num-1");
+    public UIElement ConceptCheck = createElement(UIType.Css, ".conchk-dot.conchk-num-1");
+    public UIElement LeftTimer = createElement(UIType.Css, ".counter-time");
+    public UIElement previousChapterButton = createElement(UIType.ID, "chapterPreBtn");
+    public UIElement nextChapterButton = createElement(UIType.ID, "chapterFwdBtn");
+    public UIElement dvButton = createElement(UIType.ID, "descriptionBtn");
+    
+    // First Dot it time line
+    private JavascriptExecutor executor = (JavascriptExecutor) uiDriver;
+
+    // standard waits are up to 10 seconds long
+    WebDriverWait wait = new WebDriverWait(uiDriver, 10);
+
+    /**
+     * enter the video frame and wait for it to be ready to use
+     */
+    public void enterFrame() {
+        // switch to frame of video
+        uiDriver.switchTo().frame(0);
+        // sleep 2 seconds because even after the video image has loaded, the
+        // video may not be in a
+        // playable state
+        uiDriver.sleep(2000);
+    }
+
+    /**
+     * clicks the toolbar play button
+     */
+    public void clickToolbarPlay() {
+        logInstruction("Click toolbar play button");
+        // Sergey has to have an override for IE clicking on buttons.
+        // Workaround for now.
+        if (uiDriver.getWebDriver().toString().contains("InternetExplorerDriver")) {
+            executor.executeScript("arguments[0].click();", playPauseButton.getWebElement());
+        } else {
+            playPauseButton.click();
+        }
+    }
+
+    /**
+     * clicks the CC button If in IE use a javascript executor
+     */
+    public void clickCCButton() {
+        logInstruction("Click CC button");
+        if (uiDriver.getWebDriver().toString().contains("InternetExplorerDriver")) {
+            WebElement weCaptionButton = uiDriver.findElement(By.id("captionBtn"));
+            executor.executeScript("arguments[0].click();", weCaptionButton);
+        } else {
+            captionButton.click();
+        }
+    }
+
+    /**
+     * clicks the english language option
+     */
+    public void clickEnglishLanuageOption() {
+        logInstruction("Select the English language");
+        uiDriver.waitToBeDisplayed(captionsEnglishLink, 10000);
+        uiDriver.waitToBeDisplayed(captionsSpanishLink, 2000);
+        uiDriver.waitToBeDisplayed(captionsOffLink, 2000);
+        captionsEnglishLink.click();
+    }
+    
+    /**
+     * clicks the spanish language option
+     */
+    public void clickSpaishLanuageOption() {
+        logInstruction("Select the Spanish language");
+        uiDriver.waitToBeDisplayed(captionsEnglishLink, 10000);
+        uiDriver.waitToBeDisplayed(captionsSpanishLink, 2000);
+        uiDriver.waitToBeDisplayed(captionsOffLink, 2000);
+        captionsSpanishLink.click();
+    }
+
+
+
+    /**
+     * Clicks the menu button
+     * */
+    public void clickMenuButton() {
+        chapterMenu.click();
+    }
+
+    /**
+     * Clicks the mute button
+     */
+    public void clickMuteButton() {
+        muteButton.click();
+    }
+
+    /**
+     * Gets captions text not really used
+     */
+    public String getCaptionsText() {
+        return captionArea.getText();
+    }
+
+    /**
+     * Gets the value of the mute button
+     * 
+     * @return value of mute button
+     */
+    public String getMuteButtonTitle() {
+        return muteButton.getAttribute("title");
+    }
+
+    /**
+     * Gets the width of the volume slider (how high the volume is)
+     */
+    public int getLoadedVolumeSliderWidth() {
+        return loadedVolumeSlider.getSize().getWidth();
+    }
+
+    public void assertNoError() {
+        // TODO Auto-generated method stub
+        System.out.println(NO_ERROR);
+    }
+
+    /**
+     * Throws failure, marks it in testng, and gives error message
+     */
+    public void assertError(String expectedError) {
+        Assert.fail("expectedError");
+    }
+
+    public String getError() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void checkingElementsInVideoUrl(
+            String url,
+            String videoName,
+            final String expectedVideoTitle) {
+
+        uiDriver.get(url);
+        enterFrame();
+        logger.info("switching to frame");
+
+        if (videoName.equalsIgnoreCase("ChapteringMenu")) {
+
+            logger.info("Waiting for chapter menu to be appear..");
+            uiDriver.sleep(15000);
+            uiDriver.waitToBePresent(chapterMenu, 25000);
+            Assert.assertTrue(chapterMenuItems.isDisplayed());
+            clickMenuButton();
+        } else
+            if (videoName.equalsIgnoreCase("PrePlayStateTwoCaptionVideo") && videoName
+                    .equalsIgnoreCase("PrePlayStateOneCaptionVideo")) {
+                logger.info("Waiting for caption button to be appear..");
+                uiDriver.waitToBePresent(captionButton, 22000);
+                Assert.assertTrue(captionButton.isDisplayed());
+            } else {
+
+                logger.error("Video name is incorrect ");
+            }
+
+        uiDriver.waitToBePresent(videoTitle, 20000);
+        String videoTitleTxt = videoTitle.getText();
+        // TODO takingScreenshot(uiDriver.getCurrentUrl(), videoName);
+        logger.info("screenshot taken");
+
+        wait.until(new ExpectedCondition<Boolean>() {
+
+            public Boolean apply(WebDriver webDriver) {
+                System.out.println("Waiting for title to load correctly " + videoTitle.getText());
+                return videoTitle.getText().equalsIgnoreCase(expectedVideoTitle);
+            }
+        });
+
+        logger.info("Waiting for normal size button to be appear..");
+        Assert.assertTrue(fullSizeButton.isDisplayed());
+        logger.info("Waiting for full size button to be appear..");
+        Assert.assertTrue(leftPlayCounter.isDisplayed());
+        logger.info("Waiting for left play counter to be appear..");
+        Assert.assertTrue(rightPlayCounter.isDisplayed());
+        logger.info("Waiting for right play counter to be appear..");
+        Assert.assertTrue(volumeBg.isDisplayed());
+        logger.info("Waiting for volume button to be appear..");
+        Assert.assertTrue(muteButton.isDisplayed());
+        logger.info("Waiting for mute button to be appear..");
+
+    }
+
+    /*
+     * public void takingScreenshot(String url, String videoName) {
+     * 
+     * try { File fileLocation = new File("Screenshot"); if (!fileLocation.exists())
+     * fileLocation.mkdir(); Calendar cal = Calendar.getInstance(); SimpleDateFormat sdf = new
+     * SimpleDateFormat("ddMMM_HH_mm_ss"); String screenname = "Screenshot\\screenshot_" + videoName
+     * + "_" + sdf.format(cal .getTime()) + ".png"; logger.info("Image Location=" + screenname);
+     * Toolkit toolkit = Toolkit.getDefaultToolkit(); Rectangle screenSize = new Rectangle(0, 0,
+     * toolkit.getScreenSize().width, toolkit .getScreenSize().height); Robot robot = new Robot();
+     * BufferedImage bfIimage = robot.createScreenCapture(screenSize); ImageIO.write(bfIimage,
+     * "png", new File(screenname)); } catch (Exception e) { e.printStackTrace(); } }
+     */
+
+    /**
+     * Will verify that copyright matches expected text
+     */
+    public void verifyCopyrightText(String expectedCaptionsText) {
+        Assert.assertTrue(
+                copyRightText.getText().equalsIgnoreCase(expectedCaptionsText),
+                "the copyRight text did not appear correctly or was not at the right place.");
+    }
+
+    /**
+     * 
+     */
+    public void waitForVideoToEnd() {
+        // wait up to 300 seconds for video to scrub and finish
+        WebDriverWait waitVideoEnd = new WebDriverWait(uiDriver, 300, 9000);
+        // video has stopped (and probably finished) playing
+        waitVideoEnd.until(new ExpectedCondition<Boolean>() {
+
+            public Boolean apply(WebDriver webDriver) {
+                System.out.println("Waiting for video to finish playback ...");
+                return webDriver.findElement(By.id("playBtn")).getAttribute("value")
+                        .equalsIgnoreCase("Play Video");
+            }
+        });
+    }
+
+    /**
+     * Verifies with the time code that video has paused After accessibility implementation by the
+     * dev. this method has the possibility to fail when called right before the video starts The
+     * method, which we expected to return "[##:##]", is now reporting "# minutes # seconds [##:##]"
+     * before the rightPlayCounter is available, and will return
+     * "# minutes of # seconds of # minutes of # seconds [##:##]" after the rightPlayCounter is
+     * available, hence making the method unreliable to use to test if the video starts playing from
+     * the start
+     * 
+     * A temporary fixed has been added, so the method only compares the last time digit code
+     * [##:##]
+     */
+    public void verifyVideoPaused() {
+        String currentTime = leftPlayCounter.getText();
+        sleep(1000);
+        String newTime = leftPlayCounter.getText();
+        Assert.assertEquals(
+                newTime.substring(newTime.length() - 5, newTime.length()),
+                currentTime.substring(currentTime.length() - 5, currentTime.length()),
+                "The video is still playing");
+    }
+
+    /**
+     * Verifies the left time code with a 2 seconds interval to ensure the video is actually playing
+     * Will return true and the video is playing, and false when the video is not playing This
+     * method does not stop the test nor does it file any error message, it simply returns true and
+     * false
+     * 
+     */
+    public boolean verifyVideoIsPlaying() {
+        String currentTime = leftPlayCounter.getText();
+        sleep(2000);
+        String newTime = leftPlayCounter.getText();
+        if (currentTime.substring(currentTime.length() - 5, currentTime.length()).equals(
+                newTime.substring(newTime.length() - 5, newTime.length())))
+            return false;
+        else
+            return true;
+    }
+
+    /**
+     * Takes as param two strings, the expected text that will show up in firefox and the expected
+     * text that will show up in other browsers Waits up to 10 seconds To be used after you do
+     * something that you think will cause captions to change to something expected soon
+     */
+    public void waitForCaptionText(final String expectedCaptionText) {
+        // wait up to 30 seconds (latency issues on jenkins) for video to play to captions matching
+        WebDriverWait waitCaptionsMatch = new WebDriverWait(uiDriver, 30, 2);
+        logInstruction("Wait for caption text to appear: " + expectedCaptionText);
+        waitCaptionsMatch.until(new ExpectedCondition<Boolean>() {
+
+            public Boolean apply(WebDriver webDriver) {
+                //String currentCaptionText = webDriver.findElement(
+                        //By.cssSelector("div[id=captions]>div>p")).getText();
+            	String currentCaptionText = webDriver.findElement(
+                        By.cssSelector("#captions")).getText();
+            	System.out.println(currentCaptionText);
+                System.out
+                        .println("Waiting for video caption text to match for video:... " + currentCaptionText);
+                return currentCaptionText.equalsIgnoreCase(expectedCaptionText);
+            }
+        });
+    }
+
+    /**
+     * This method should be called after enabling closed captions It just verifies that the video
+     * image size is smaller than what it starts at Should only be run in normal screen mode.
+     * Technically it can't tell if the video size was always shrunk 632 and 380 are the width and
+     * height of the video image in firefox 17 by default
+     */
+    public void waitForVideoSizeToShrink() {
+        wait.until(new ExpectedCondition<Boolean>() {
+
+            public Boolean apply(WebDriver webDriver) {
+                System.out.println("Waiting for video image to shrink... " + webDriver.findElement(
+                        By.id("_playerPdkSwfObject")).getSize().getWidth() + " * " + webDriver
+                        .findElement(By.id("_playerPdkSwfObject")).getSize().getHeight());
+                return (videoImageArea.getSize().getWidth() < 632 && videoImageArea.getSize()
+                        .getHeight() < 380);
+            }
+        });
+    }
+
+    /**
+     * Verifies that 10 chapters appears on a menu without scrolling Actually only verifies there is
+     * enough space for 10 elements
+     */
+    public void verifyTenChaptersAppearOnMenu() {
+
+        Assert.assertTrue(chapterMenuList.getSize().height > chapter1.getSize().height * 9);
+    }
+  //29th Jan - Title Verification
+
+    public void TitleVerification(String VideoName,String ExpectedTitle) {
+
+       //uiDriver.get(config.getValue("VideoName"));
+       //enterFrame();
+       //uiDriver.sleep(25000);
+       String ActualTitle = videoTitle.getText();
+       Assert.assertEquals(ActualTitle, ExpectedTitle);
+    }
+  
+    
+    
+    
+    
+    //30th Jan - Play/Pause functionality for video
+    public void PlayPause(String URL ,String PlayToolTip,String PauseToolTip) {
+        uiDriver.get(URL);
+        enterFrame();
+        uiDriver.sleep(35000);
+        //Play the video
+        playButton.click();
+    
+       //playButton.getUIActions().hoverOverAndClickOn();
+        
+        uiDriver.sleep(10000);
+        //Confirming whether video is playing
+        String ActualTooltip = pauseButton.getAttribute("title");
+        Assert.assertEquals(ActualTooltip, PlayToolTip);
+        //Pause the video
+        pauseButton.click();
+        uiDriver.sleep(10000);
+        //Confirming whether video is paused
+        String ActualTooltip01 = playButton.getAttribute("title");
+        Assert.assertEquals(ActualTooltip01, PauseToolTip);
+    }
+    //30th Jan - Play/Pause functionality for audio
+    public void PlayPauseAudio(String URL ,String PlayToolTip,String PauseToolTip) {
+        uiDriver.get(URL);
+        enterFrame();
+        uiDriver.sleep(35000);
+        //Play the video
+        playAudio.click();
+        uiDriver.sleep(20000);
+        //Confirming whether audio is playing
+        String ActualTooltip = pauseButton.getAttribute("title");
+        Assert.assertEquals(ActualTooltip, PlayToolTip);
+        //Pause the video
+        pauseAudio.click();
+        uiDriver.sleep(10000);
+        //Confirming whether audio is paused
+        String ActualTooltip01 = playButton.getAttribute("title");
+       Assert.assertEquals(ActualTooltip01, PauseToolTip);
+    }
+    //04 Feb : Volume toggle on and off control for video's
+    public void VolumeControl(String URL, String ToggleOffState, String ToggleOnState){
+    	uiDriver.get(URL);
+    	enterFrame();
+    	uiDriver.sleep(25000);
+    	playButton.click();
+    	uiDriver.sleep(5000);
+    	//Checking tool tip for volume button
+    	String ActualTooltip = getMuteButtonTitle();
+    	Assert.assertEquals(ActualTooltip, ToggleOffState);
+    	//Turning the volume off and verifying tool tip for volume button
+    	muteButton.click();
+    	String ActualTooltip01 = getMuteButtonTitle();
+    	Assert.assertEquals(ActualTooltip01, ToggleOnState);
+    }
+     //06 Feb : Volume toggle on and off control for Audio's
+    public void AudioVolumeControl(String URL, String ToggleOffState, String ToggleOnState){
+    	uiDriver.get(URL);
+    	enterFrame();
+    	uiDriver.sleep(25000);
+    	playAudio.click();
+    	uiDriver.sleep(5000);
+    	//Checking tool tip for volume button
+    	String ActualTooltip = getMuteButtonTitle();
+    	Assert.assertEquals(ActualTooltip, ToggleOffState);
+    	//Turning the volume off and verifying tool tip for volume button
+    	muteButton.click();
+    	String ActualTooltip01 = getMuteButtonTitle();
+    	Assert.assertEquals(ActualTooltip01, ToggleOnState);
+    }
+  //Check Normal/Full screen button tool tip
+    public String checkToolTip(String Element) {
+    	if(Element == "Play Button")
+    	{
+    		if(playButton.getAttribute("title-hidden")!= null)
+    		    return playButton.getAttribute("title-hidden");
+    		else
+    			return playButton.getAttribute("title");			
+    	}    		
+    	else if (Element == "Pause Button")
+    	{
+    		if(pauseButton.getAttribute("title-hidden")!= null)
+    			return pauseButton.getAttribute("title-hidden");
+    		else
+    			return pauseButton.getAttribute("title");			
+    	}	
+    	else if (Element == "Normal screen Button")
+    	{
+    		if(fullSizeButton.getAttribute("title")!= null)
+    		    return fullSizeButton.getAttribute("title");
+    		else
+    			return fullSizeButton.getAttribute("title-hidden");			
+    	}
+    	else if (Element == "Full screen Button")
+    	{
+    		if(fullSizeButton.getAttribute("title-hidden")!= null)
+    			return fullSizeButton.getAttribute("title-hidden");
+    		else
+    			return fullSizeButton.getAttribute("title");			
+    	}
+    	else if (Element == "CC Button")
+    	{
+    		if(captionButton.getAttribute("title-hidden")!= null)
+    			return captionButton.getAttribute("title-hidden");
+    		else
+    			return captionButton.getAttribute("title");			
+    	}
+    	else if (Element == "More Info Button")
+    	{
+    		if(moreInfoButton.getAttribute("title-hidden")!= null)
+    			return moreInfoButton.getAttribute("title-hidden");
+    		else
+    			return moreInfoButton.getAttribute("title");			
+    	}
+    	else if (Element == "DV Button")
+    	{
+    		if(dvButton.getAttribute("title-hidden")!= null)
+    			return dvButton.getAttribute("title-hidden");
+    		else
+    			return dvButton.getAttribute("title");			
+    	}
+    	else if (Element == "Volume On Button")
+    	{
+    		if(muteButton.getAttribute("title-hidden")!= null)
+    			return muteButton.getAttribute("title-hidden");
+    		else
+    			return muteButton.getAttribute("title");			
+    	}
+    	else if (Element == "Volume Off Button")
+    	{
+    		if(muteButton.getAttribute("title-hidden")!= null)
+    			return muteButton.getAttribute("title-hidden");
+    		else
+    			return muteButton.getAttribute("title");			
+    	}
+    	else if (Element == "Skip Previous Button")
+    	{
+    		if(previousChapterButton.getAttribute("title-hidden")!= null)
+    			return previousChapterButton.getAttribute("title-hidden");
+    		else
+    			return previousChapterButton.getAttribute("title");			
+    	}
+    	else if (Element == "Skip Next Button")
+    	{
+    		if(nextChapterButton.getAttribute("title-hidden")!= null)
+    			return nextChapterButton.getAttribute("title-hidden");
+    		else
+    			return nextChapterButton.getAttribute("title");			
+    	}
+    	else
+    			return "Not Matching";	
+    }
+    public void HoverPlay(String URL)	{
+    	uiDriver.get(URL);
+    	enterFrame();
+    	uiDriver.sleep(30000);
+    	//((JavascriptExecutor)uiDriver).executeScript("$('#hoverPlayButton').click();");
+    	
+    	hoverPlayButton.getUIActions().mouseMoveHere();
+    	hoverPlayButton.getUIActions().click();
+    	//uiDriver.sendKeysToBrowser(keysToSend);
+    	//progressBarSlider.getUIActions().dragAndDrop(chapter7);
+    	uiDriver.sleep(30000);
+    	}
+    public void DragandDrop(String URL)	{
+    	uiDriver.get(URL);
+    	enterFrame();
+    	uiDriver.sleep(30000);
+    	//((JavascriptExecutor)uiDriver).executeScript("$('#hoverPlayButton').click();");
+    	
+    	hoverPlayButton.getUIActions().mouseMoveHere();
+    	uiDriver.sleep(30000);
+    	}
+       
+}
